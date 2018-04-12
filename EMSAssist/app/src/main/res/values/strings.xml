@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">EMS Assist</string>
+    <string name="title_activity_assessment">AssessmentActivity</string>
+</resources>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/chief_complaint"
+        android:title="Personal Info"
+        app:showAsAction="never"/>
+    <item android:id="@+id/chief_complaint"
+        android:title="Primary Complaint"
+        app:showAsAction="never"/>
+    <item android:id="@+id/get_help"
+        android:title="Notify EMS"
+        app:showAsAction="never" />
+    <item android:id="@+id/view_map"
+        android:title="View Map"
+        app:showAsAction="never"/>
+    <item android:id="@+id/take_video"
+        android:title="Video"
+        app:showAsAction="never"/>
+    <item android:id="@+id/take_picture"
+        android:title="Picture"
+        app:showAsAction="never"/>
+
+</menu>

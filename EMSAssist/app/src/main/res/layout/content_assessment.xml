@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.fstrout.emsassist.AssessmentActivity"
+    tools:showIn="@layout/activity_assessment">
+
+    <TextView
+        android:id="@+id/question_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_margin="8dp"
+        android:textSize="22sp"
+        android:textColor="@color/colorPrimaryDark"/>
+
+    <EditText
+        android:id="@+id/input_field"
+        android:layout_above="@+id/row_top"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        android:visibility="gone"/>
+
+    <LinearLayout
+        android:id="@+id/row_top"
+        android:layout_width="match_parent"
+        android:layout_height="110dp"
+        android:layout_above="@id/row_bottom"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginTop="4dp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/selection_four"
+            android:layout_width="0dp"
+            android:layout_height="110dp"
+            android:layout_weight="50"
+            android:layout_marginEnd="2dp"
+            android:background="@color/colorPrimary"/>
+
+        <Button
+            android:id="@+id/selection_three"
+            android:layout_width="0dp"
+            android:layout_height="110dp"
+            android:layout_weight="50"
+            android:layout_marginStart="2dp"
+            android:background="@color/colorPrimary"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/row_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="110dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/selection_two"
+            android:layout_width="0dp"
+            android:layout_height="110dp"
+            android:layout_weight="50"
+            android:layout_marginEnd="2dp"
+            android:background="@color/colorPrimary"/>
+
+        <Button
+            android:id="@+id/selection_one"
+            android:layout_width="0dp"
+            android:layout_height="110dp"
+            android:layout_weight="50"
+            android:layout_marginStart="2dp"
+            android:background="@color/colorPrimary"/>
+    </LinearLayout>
+</RelativeLayout>
