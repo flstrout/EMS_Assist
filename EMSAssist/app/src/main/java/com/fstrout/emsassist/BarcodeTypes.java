@@ -1,10 +1,5 @@
 package com.fstrout.emsassist;
 
-/**
- * Created by fstrout on 11/20/17.
- *
- */
-
 public class BarcodeTypes {
     /**
      * Barcode Types Constants
