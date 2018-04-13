@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/start"
+        android:title="Start"/>
+    <item android:id="@+id/alert_level"
+        android:title="Consciousness"/>
+    <item android:id="@+id/breathing"
+        android:title="Breathing"/>
+    <item android:id="@+id/interview"
+        android:title="Interview"/>
+    <item android:id="@+id/head_to_toe"
+        android:title="Head-To-Toe"/>
+</menu>

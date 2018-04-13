@@ -103,11 +103,20 @@ public class Questions extends RealmObject {
 
     }
 
-    public static RealmList<Questions> createDefaults() {
+    static RealmList<Questions> createDefaults() {
         RealmList<Questions> questionList = new RealmList<>();
 
         // First Question
         questionList.add(createQuestion(1,
+                "Is the subject Male or Female?",
+                false,
+                "Male", 50,
+                "Female", 50,
+                "", 0,
+                "", 0));
+
+        // First Question
+        questionList.add(createQuestion(50,
                 "What is the subject's current state of alertness?",
                 false,
                 "Unconscious", 500,
