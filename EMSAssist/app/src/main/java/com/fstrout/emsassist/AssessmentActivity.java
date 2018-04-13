@@ -2,9 +2,11 @@ package com.fstrout.emsassist;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -34,6 +36,7 @@ public class AssessmentActivity extends AppCompatActivity {
     public static HashMap<String, Drug> drugList = new HashMap<>();
     public static final int BARCODE_REQUEST_CODE = 100;
     boolean connect;
+    int questionId= 0;
     String notifyEMS = "Notify EMS";
     TextView questionText;
     Button button1, button2, button3, button4;
@@ -97,15 +100,23 @@ public class AssessmentActivity extends AppCompatActivity {
         Intent intent = getIntent();
         connect = intent.getBooleanExtra(MainActivity.EXTRA_CONNECT, false);
 
-        if (connect) Toast.makeText(context, notifyEMS, Toast.LENGTH_LONG).show();
 
+        if (connect){
+            Toast.makeText(context, notifyEMS, Toast.LENGTH_LONG).show();
+            questionId = 20000;
+        }
         questionText = findViewById(R.id.question_text);
+
         button1 = findViewById(R.id.selection_one);
         button1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 int tagValue = (int) button1.getTag();
-                displayNextQuestion(tagValue, v);
+                if(connect){
+                   broadcastEMSAndReturnToMain();
+                }
+                else
+                    displayNextQuestion(tagValue, v);
             }
         });
         button2 = findViewById(R.id.selection_two);
@@ -113,7 +124,10 @@ public class AssessmentActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 int tagValue = (int) button2.getTag();
-                displayNextQuestion(tagValue, v);
+                if(connect){
+                    broadcastEMSAndReturnToMain();
+                }
+                else displayNextQuestion(tagValue, v);
             }
         });
         button3 = findViewById(R.id.selection_three);
@@ -121,7 +135,10 @@ public class AssessmentActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 int tagValue = (int) button3.getTag();
-                displayNextQuestion(tagValue, v);
+                if(connect){
+                    broadcastEMSAndReturnToMain();
+                }
+                else displayNextQuestion(tagValue, v);
             }
         });
         button4 = findViewById(R.id.selection_four);
@@ -129,11 +146,14 @@ public class AssessmentActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 int tagValue = (int) button4.getTag();
-                displayNextQuestion(tagValue, v);
+                if (connect) {
+                    broadcastEMSAndReturnToMain();
+                }
+                else displayNextQuestion(tagValue, v);
             }
         });
 
-        displayNextQuestion(1, null);
+        displayNextQuestion(questionId, null);
     }
 
     private void displayNextQuestion(int questionID, View view) {
@@ -267,6 +287,15 @@ public class AssessmentActivity extends AppCompatActivity {
             super.onActivityResult(requestCode, resultCode, data);
         }
     }
+    private void broadcastEMSAndReturnToMain(){
+        new AlertDialog.Builder(AssessmentActivity.this).setTitle("EMS Message").setMessage("EMS broadcasted, help is on the way").setPositiveButton("Go Back", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                Intent goBackToMain = new Intent(context, MainActivity.class);
+                startActivity(goBackToMain);
+            }
+        }).show();
+    }
 
     private class GetDrugData extends AsyncTask<Void, Void, Void> {
 
@@ -364,6 +393,4 @@ public class AssessmentActivity extends AppCompatActivity {
         }
 
     }
-
-
 }
