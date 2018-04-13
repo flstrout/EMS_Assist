@@ -5,6 +5,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -32,10 +37,16 @@ public class AssessmentActivity extends AppCompatActivity {
     String notifyEMS = "Notify EMS";
     TextView questionText;
     Button button1, button2, button3, button4;
+
     private String TAG = MainActivity.class.getSimpleName();
     private ProgressDialog pDialog;
     // URL to get contacts JSON
     private static String url = "https://hhs-opioid-codeathon.data.socrata.com/resource/9qqv-5nvv.json";
+
+    DrawerLayout drawerLayout;
+    ActionBarDrawerToggle drawerToggle;
+    NavigationView navigationView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +56,42 @@ public class AssessmentActivity extends AppCompatActivity {
         toolbar.setTitle("Assess Subject");
         setSupportActionBar(toolbar);
         context = this;
+        drawerLayout = findViewById(R.id.drawer_layout);
+        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
+        navigationView = findViewById(R.id.nav_view);
+        drawerLayout.addDrawerListener(drawerToggle);
+        drawerToggle.syncState();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
+                switch (item.getItemId()) {
+                    case R.id.start:
+                        displayNextQuestion(1, null);
+                        drawerLayout.closeDrawer(GravityCompat.START);
+                        return true;
+                    case R.id.alert_level:
+                        displayNextQuestion(50, null);
+                        drawerLayout.closeDrawer(GravityCompat.START);
+                        return true;
+                    case R.id.breathing:
+                        displayNextQuestion(600, null);
+                        drawerLayout.closeDrawer(GravityCompat.START);
+                        return true;
+                    case R.id.interview:
+                        displayNextQuestion(100, null);
+                        drawerLayout.closeDrawer(GravityCompat.START);
+                        return true;
+                    case R.id.head_to_toe:
+                        displayNextQuestion(1000, null);
+                        drawerLayout.closeDrawer(GravityCompat.START);
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+        });
 
         // Get the connect boolean passed through the Intent.
         Intent intent = getIntent();
@@ -169,7 +215,13 @@ public class AssessmentActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        if (drawerToggle.onOptionsItemSelected(item)) return true;
+
         switch (item.getItemId()) {
+
+            case R.id.medical_history:
+                Toast.makeText(context, "Launch Medical History", Toast.LENGTH_LONG).show();
+                return true;
             case R.id.chief_complaint:
                 Toast.makeText(context, "Launch Chief Complaint Alert", Toast.LENGTH_LONG).show();
                 return true;
