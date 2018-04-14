@@ -70,7 +70,8 @@ public class AssessmentActivity extends AppCompatActivity {
         toolbar.setTitle("Assess Subject");
         setSupportActionBar(toolbar);
         context = this;
-
+        userInfoPreference = getSharedPreferences("UserPref", MODE_PRIVATE);
+        emergencyContact = userInfoPreference.getString("contactNumber", "");
         // Get the connect boolean passed through the Intent.
         Intent intent = getIntent();
         connect = intent.getBooleanExtra(MainActivity.EXTRA_CONNECT, false);
@@ -365,7 +366,7 @@ public class AssessmentActivity extends AppCompatActivity {
 
     private void broadcastEMSAndReturnToMain() {
 
-        if (!emergencyContact.isEmpty()) {
+
 
             GPSTracker gps = new GPSTracker(AssessmentActivity.this);
 
@@ -374,8 +375,9 @@ public class AssessmentActivity extends AppCompatActivity {
 
                 String message = "Help needed!! \n Send help to the location: ";
                 String link = "http://maps.google.com/maps?q=loc:" + String.format("%f,%f", gps.getLatitude(), gps.getLongitude());
+                if (!emergencyContact.isEmpty()) {
                 SmsManager smsManager = SmsManager.getDefault();
-                smsManager.sendTextMessage(emergencyContact, null, message + link, null, null);
+                smsManager.sendTextMessage("+1" + emergencyContact, null, message + link, null, null);
             }
 
             new AlertDialog.Builder(AssessmentActivity.this).setTitle("EMS Message").setMessage("EMS broadcasted, help is on the way").setPositiveButton("Go Back", new DialogInterface.OnClickListener() {
