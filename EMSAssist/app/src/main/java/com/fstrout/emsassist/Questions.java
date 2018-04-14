@@ -210,7 +210,7 @@ public class Questions extends RealmObject {
                 "Get subject face up on a firm surface.\nBegin CPR.\n\nContinue CPR Until:\n-The subject responds\n-EMS takes over\n-You're too exhausted to continue",
                 false,
                 "Subject Responded!", 1000,0,
-                "Hand Off to EMS", 5000,0,
+                "Hand Off to EMS", 6000,0,
                 "", 0,0,
                 "", 0,0));
 
@@ -384,7 +384,7 @@ public class Questions extends RealmObject {
                 "", 0,0));
 
         // Hand Off
-        questionList.add(createQuestion(5000,
+        questionList.add(createQuestion(6000,
                 "Hand Off to EMS",
                 false,
                 "", 0,0,
