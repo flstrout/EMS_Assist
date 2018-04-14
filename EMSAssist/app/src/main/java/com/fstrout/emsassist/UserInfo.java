@@ -120,10 +120,10 @@ public class UserInfo extends AppCompatActivity {
     }
     private void saveUserInfo(){
         userEditor.putString("gender", userGender);
-        userEditor.putInt("age", Integer.parseInt(ageInfo.getText().toString()));
-        userEditor.putFloat("weight", Float.parseFloat(weightInfo.getText().toString()));
-        userEditor.putFloat("height1", Float.parseFloat(heightInfo1.getText().toString()));
-        userEditor.putFloat("height2", Float.parseFloat(heightInfo2.getText().toString()));
+        userEditor.putString("age", ageInfo.getText().toString());
+        userEditor.putString("weight", weightInfo.getText().toString());
+        userEditor.putString("height1", heightInfo1.getText().toString());
+        userEditor.putString("height2", heightInfo2.getText().toString());
         userEditor.putString("userCategory", userCategory );
         userEditor.putString("contactNumber", contactNumber.getText().toString() );
         userEditor.putString("medication", medicationInfo.getText().toString() );

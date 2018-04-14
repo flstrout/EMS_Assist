@@ -2,7 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.fstrout.emsassist">
 
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.SEND_SMS"/>
 
     <application
         android:allowBackup="true"
@@ -23,9 +26,10 @@
             android:label="@string/title_activity_assessment"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
-        <activity android:name=".UserInfo"
-            android:screenOrientation="portrait" >
-            android:label="Create profile"></activity>
+        <activity
+            android:name=".UserInfo"
+            android:screenOrientation="portrait"
+            android:label="Create profile"/>
         <activity android:name=".ScannerActivity"
             android:label="Scan Barcode"/>
         <meta-data
@@ -35,5 +39,4 @@
             android:name="com.google.android.gms.vision.DEPENDENCIES"
             android:value="barcode" />
     </application>
-
 </manifest>

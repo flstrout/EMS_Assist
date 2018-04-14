@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -16,6 +17,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -29,7 +31,6 @@ import com.google.android.gms.vision.barcode.Barcode;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import io.realm.Realm;
@@ -37,6 +38,7 @@ import io.realm.Realm;
 
 public class AssessmentActivity extends AppCompatActivity {
 
+    SharedPreferences userInfoPreference;
     Context context;
     public static HashMap<String, Drug> drugList = new HashMap<>();
     ArrayList<String> questionAnswer = new ArrayList<>();
@@ -53,7 +55,7 @@ public class AssessmentActivity extends AppCompatActivity {
     private ProgressDialog pDialog;
     // URL to get contacts JSON
     private static String url = "https://hhs-opioid-codeathon.data.socrata.com/resource/9qqv-5nvv.json";
-
+    String emergencyContact = "";
     DrawerLayout drawerLayout;
     ActionBarDrawerToggle drawerToggle;
     NavigationView navigationView;
@@ -73,6 +75,9 @@ public class AssessmentActivity extends AppCompatActivity {
         inputText = findViewById(R.id.input_field);
         drawerLayout.addDrawerListener(drawerToggle);
         drawerToggle.syncState();
+        userInfoPreference = getApplicationContext().getSharedPreferences("UserPref", MODE_PRIVATE);
+        emergencyContact = userInfoPreference.getString("contactNumber", "");
+
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -110,7 +115,7 @@ public class AssessmentActivity extends AppCompatActivity {
         connect = intent.getBooleanExtra(MainActivity.EXTRA_CONNECT, false);
 
 
-        if (connect){
+        if (connect) {
             Toast.makeText(context, notifyEMS, Toast.LENGTH_LONG).show();
             questionId = 20000;
         }
@@ -121,10 +126,9 @@ public class AssessmentActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 int tagValue = (int) button1.getTag();
-                if(connect){
-                   broadcastEMSAndReturnToMain();
-                }
-                else
+                if (connect) {
+                    broadcastEMSAndReturnToMain();
+                } else
                     displayNextQuestion(tagValue, v);
             }
         });
@@ -133,10 +137,9 @@ public class AssessmentActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 int tagValue = (int) button2.getTag();
-                if(connect){
+                if (connect) {
                     broadcastEMSAndReturnToMain();
-                }
-                else displayNextQuestion(tagValue, v);
+                } else displayNextQuestion(tagValue, v);
             }
         });
         button3 = findViewById(R.id.selection_three);
@@ -144,10 +147,9 @@ public class AssessmentActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 int tagValue = (int) button3.getTag();
-                if(connect){
+                if (connect) {
                     broadcastEMSAndReturnToMain();
-                }
-                else displayNextQuestion(tagValue, v);
+                } else displayNextQuestion(tagValue, v);
             }
         });
         button4 = findViewById(R.id.selection_four);
@@ -157,8 +159,7 @@ public class AssessmentActivity extends AppCompatActivity {
                 int tagValue = (int) button4.getTag();
                 if (connect) {
                     broadcastEMSAndReturnToMain();
-                }
-                else displayNextQuestion(tagValue, v);
+                } else displayNextQuestion(tagValue, v);
             }
         });
 
@@ -284,7 +285,7 @@ public class AssessmentActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == BARCODE_REQUEST_CODE && resultCode == RESULT_OK) {
+        if (requestCode == BARCODE_REQUEST_CODE && resultCode == RESULT_OK) {
             if (data != null) {
                 Barcode barcode = data.getParcelableExtra("barcode");
 
@@ -298,128 +299,144 @@ public class AssessmentActivity extends AppCompatActivity {
                 inputText.setVisibility(View.VISIBLE);
                 inputText.setText(drugName);
                 questionAnswer.add("Medicine list: " + drugName);
-                drugCount ++;
-                if(drugCount >= 3 ){
-                Snackbar.make(findViewById(android.R.id.content), "Warning! Possible opioid overdose!", Snackbar.LENGTH_LONG)
-                        .setAction("DISMISS", new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                // save operations
-                            }
-                        })
-                        .setActionTextColor(Color.RED)
-                        .setDuration(20000).show();
+                drugCount++;
+                if (drugCount >= 3) {
+                    Snackbar.make(findViewById(android.R.id.content), "Warning! Possible opioid overdose!", Snackbar.LENGTH_LONG)
+                            .setAction("DISMISS", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    // save operations
+                                }
+                            })
+                            .setActionTextColor(Color.RED)
+                            .setDuration(20000).show();
                 }
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
     }
-    private void broadcastEMSAndReturnToMain(){
-        new AlertDialog.Builder(AssessmentActivity.this).setTitle("EMS Message").setMessage("EMS broadcasted, help is on the way").setPositiveButton("Go Back", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                finish();
+
+    private void broadcastEMSAndReturnToMain() {
+
+        if (!emergencyContact.isEmpty()) {
+
+            GPSTracker gps = new GPSTracker(AssessmentActivity.this);
+
+            // Check if GPS enabled
+            if (gps.canGetLocation()) {
+
+                String message = "Help needed!! \n Send help to the location: ";
+                String link = "http://maps.google.com/maps?q=loc:" + String.format("%f,%f", gps.getLatitude(), gps.getLongitude());
+                SmsManager smsManager = SmsManager.getDefault();
+                smsManager.sendTextMessage(emergencyContact, null, message + link, null, null);
+            }
+
+            new AlertDialog.Builder(AssessmentActivity.this).setTitle("EMS Message").setMessage("EMS broadcasted, help is on the way").setPositiveButton("Go Back", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    finish();
 //                Intent goBackToMain = new Intent(context, MainActivity.class);
 //                startActivity(goBackToMain);
-            }
-        }).show();
+                }
+            }).show();
+        }
     }
 
-    private class GetDrugData extends AsyncTask<Void, Void, Void> {
+        private class GetDrugData extends AsyncTask<Void, Void, Void> {
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            // Showing progress dialog
-            pDialog = new ProgressDialog(AssessmentActivity.this);
-            pDialog.setMessage("Please wait...");
-            pDialog.setCancelable(false);
-            pDialog.show();
-        }
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                // Showing progress dialog
+                pDialog = new ProgressDialog(AssessmentActivity.this);
+                pDialog.setMessage("Please wait...");
+                pDialog.setCancelable(false);
+                pDialog.show();
+            }
 
-        @Override
-        protected Void doInBackground(Void... arg0) {
-            HttpHandler sh = new HttpHandler();
+            @Override
+            protected Void doInBackground(Void... arg0) {
+                HttpHandler sh = new HttpHandler();
 
-            // Making a request to url and getting response
-            String jsonStr = sh.makeServiceCall(url);
-            Log.e(TAG, "Response from url: " + jsonStr);
+                // Making a request to url and getting response
+                String jsonStr = sh.makeServiceCall(url);
+                Log.e(TAG, "Response from url: " + jsonStr);
 
-            if (jsonStr != null) {
-                try {
-                    jsonStr = jsonStr.replaceAll("\n", "");
-                    JSONArray jsonarray = new JSONArray(jsonStr);
-                    for(int i=0; i < jsonarray.length(); i++) {
-                        Drug drug = new Drug();
-                        JSONObject jsonobject = jsonarray.getJSONObject(i);
-                        String PRODUCTID = getJsonString(jsonobject,"productid" );
-                        String PRODUCTNDC = getJsonString(jsonobject,"productndc");
-                        String PRODUCTTYPENAME = getJsonString(jsonobject,"producttypename");
-                        String PROPRIETARYNAME = getJsonString(jsonobject,"proprietaryname");
-                        String PROPRIETARYNAMESUFFIX = getJsonString(jsonobject,"proprietarynames");
-                        String NONPROPRIETARYNAME = getJsonString(jsonobject,"nonproprietaryname");
-                        String DOSAGEFORMNAME = getJsonString(jsonobject,"dosageformname");
+                if (jsonStr != null) {
+                    try {
+                        jsonStr = jsonStr.replaceAll("\n", "");
+                        JSONArray jsonarray = new JSONArray(jsonStr);
+                        for (int i = 0; i < jsonarray.length(); i++) {
+                            Drug drug = new Drug();
+                            JSONObject jsonobject = jsonarray.getJSONObject(i);
+                            String PRODUCTID = getJsonString(jsonobject, "productid");
+                            String PRODUCTNDC = getJsonString(jsonobject, "productndc");
+                            String PRODUCTTYPENAME = getJsonString(jsonobject, "producttypename");
+                            String PROPRIETARYNAME = getJsonString(jsonobject, "proprietaryname");
+                            String PROPRIETARYNAMESUFFIX = getJsonString(jsonobject, "proprietarynames");
+                            String NONPROPRIETARYNAME = getJsonString(jsonobject, "nonproprietaryname");
+                            String DOSAGEFORMNAME = getJsonString(jsonobject, "dosageformname");
 
-                        drug.setPRODUCTID(PRODUCTID);
-                        drug.setPRODUCTNDC(PRODUCTNDC);
-                        drug.setPRODUCTTYPENAME(PRODUCTTYPENAME);
-                        drug.setPROPRIETARYNAME(PROPRIETARYNAME);
-                        drug.setPROPRIETARYNAMESUFFIX(PROPRIETARYNAMESUFFIX);
-                        drug.setNONPROPRIETARYNAME(NONPROPRIETARYNAME);
-                        drug.setDOSAGEFORMNAME(DOSAGEFORMNAME);
-                        drugList.put(PRODUCTNDC, drug);
+                            drug.setPRODUCTID(PRODUCTID);
+                            drug.setPRODUCTNDC(PRODUCTNDC);
+                            drug.setPRODUCTTYPENAME(PRODUCTTYPENAME);
+                            drug.setPROPRIETARYNAME(PROPRIETARYNAME);
+                            drug.setPROPRIETARYNAMESUFFIX(PROPRIETARYNAMESUFFIX);
+                            drug.setNONPROPRIETARYNAME(NONPROPRIETARYNAME);
+                            drug.setDOSAGEFORMNAME(DOSAGEFORMNAME);
+                            drugList.put(PRODUCTNDC, drug);
+                        }
+
+                    } catch (final JSONException e) {
+                        Log.e(TAG, "Json parsing error: " + e.getMessage());
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(getApplicationContext(),
+                                        "Json parsing error: " + e.getMessage(),
+                                        Toast.LENGTH_LONG)
+                                        .show();
+                            }
+                        });
+
                     }
-
-                } catch (final JSONException e) {
-                    Log.e(TAG, "Json parsing error: " + e.getMessage());
+                } else {
+                    Log.e(TAG, "Couldn't get json from server.");
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             Toast.makeText(getApplicationContext(),
-                                    "Json parsing error: " + e.getMessage(),
+                                    "Couldn't get json from server. Check LogCat for possible errors!",
                                     Toast.LENGTH_LONG)
                                     .show();
                         }
                     });
 
                 }
-            } else {
-                Log.e(TAG, "Couldn't get json from server.");
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(getApplicationContext(),
-                                "Couldn't get json from server. Check LogCat for possible errors!",
-                                Toast.LENGTH_LONG)
-                                .show();
-                    }
-                });
 
+                return null;
             }
 
-            return null;
-        }
-
-        public String getJsonString(JSONObject jso, String field) {
-            if(jso.isNull(field))
-                return null;
-            else
-                try {
-                    return jso.getString(field);
-                }
-                catch(Exception ex) {
+            public String getJsonString(JSONObject jso, String field) {
+                if (jso.isNull(field))
                     return null;
-                }
-        }
+                else
+                    try {
+                        return jso.getString(field);
+                    } catch (Exception ex) {
+                        return null;
+                    }
+            }
 
-        @Override
-        protected void onPostExecute(Void result) {
-            super.onPostExecute(result);
-            // Dismiss the progress dialog
-            if (pDialog.isShowing())
-                pDialog.dismiss();
-        }
+            @Override
+            protected void onPostExecute(Void result) {
+                super.onPostExecute(result);
+                // Dismiss the progress dialog
+                if (pDialog.isShowing())
+                    pDialog.dismiss();
+            }
 
+        }
     }
-}
+
