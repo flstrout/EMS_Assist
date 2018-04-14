@@ -201,8 +201,10 @@ public class AssessmentActivity extends AppCompatActivity {
 
         if (questionID == 100000) {
             scanBarcode(view);
+        } else if (questionID == 30000) {
+            broadcastEMSAndReturnToMain(true);
         } else if (questionID == 20000 && !firstLoad){
-            broadcastEMSAndReturnToMain();
+            broadcastEMSAndReturnToMain(false);
         } else if (questionID == 4000) {
             repeatAfterFiveMinutes(5);
         } else if (questionID == 5000) {
@@ -364,16 +366,19 @@ public class AssessmentActivity extends AppCompatActivity {
         }
     }
 
-    private void broadcastEMSAndReturnToMain() {
+    private void broadcastEMSAndReturnToMain(boolean overdose) {
 
-        GPSTracker gps = new GPSTracker(AssessmentActivity.this);
-        // Check if GPS enabled
-        if (gps.canGetLocation()) {
-            
-            String message = "Help needed!! \n Send help to the location: ";
-            String link = "http://maps.google.com/maps?q=loc:" + String.format("%f,%f", gps.getLatitude(), gps.getLongitude());
+            GPSTracker gps = new GPSTracker(AssessmentActivity.this);
 
-            if (!emergencyContact.isEmpty()) {
+            // Check if GPS enabled
+            if (gps.canGetLocation()) {
+
+                String message = "Help needed!!\nSend help to the location: ";
+                if (overdose) {
+                    message = "Help needed!!\nPossible Opioid Overdose\nSend help to the location: ";
+                }
+                String link = "http://maps.google.com/maps?q=loc:" + String.format("%f,%f", gps.getLatitude(), gps.getLongitude());
+                if (!emergencyContact.isEmpty()) {
                 SmsManager smsManager = SmsManager.getDefault();
                 smsManager.sendTextMessage("+1" + emergencyContact, null, message + link, null, null);
             }
@@ -382,8 +387,6 @@ public class AssessmentActivity extends AppCompatActivity {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     finish();
-//                Intent goBackToMain = new Intent(context, MainActivity.class);
-//                startActivity(goBackToMain);
                 }
             }).show();
         }
