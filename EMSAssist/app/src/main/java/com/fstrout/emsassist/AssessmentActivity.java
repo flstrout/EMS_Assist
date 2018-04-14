@@ -40,7 +40,6 @@ public class AssessmentActivity extends AppCompatActivity {
     Context context;
     public static HashMap<String, Drug> drugList = new HashMap<>();
     ArrayList<String> questionAnswer = new ArrayList<>();
-
     public static final int BARCODE_REQUEST_CODE = 100;
     boolean connect;
     int questionId = 1;

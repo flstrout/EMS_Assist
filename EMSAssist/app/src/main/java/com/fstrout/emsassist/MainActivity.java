@@ -31,10 +31,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         userInfoPreference =  getApplicationContext().getSharedPreferences("UserPref", MODE_PRIVATE);
-           if(!(userInfoPreference.getBoolean("userInfoSaved",false) || userInfoPreference.getBoolean("userInfoSkipped",false))){
+ //          if(!(userInfoPreference.getBoolean("userInfoSaved",false) || userInfoPreference.getBoolean("userInfoSkipped",false))){
                 Intent toAddUserInfoPage = new Intent(this, UserInfo.class);
                 startActivity(toAddUserInfoPage);
-          }
+  //        }
 
         context = this;
         Realm.init(context);

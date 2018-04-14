@@ -1,119 +1,169 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    tools:context="com.fstrout.emsassist.ScannerActivity"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:background="#effff6"
     android:padding="16dp"
+    tools:context="com.fstrout.emsassist.UserInfo">
 
-    >
-    <TextView
-        android:layout_width="wrap_content"
+    <EditText
+        android:id="@+id/age"
+        android:layout_width="368dp"
         android:layout_height="wrap_content"
-        android:textSize="22sp"
-        android:textColor="#ffffff"
-        android:textStyle="bold"
-        android:text="Fill Out User Info"/>
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="122dp"
+        android:ems="10"
+        android:hint="Age"
+        android:inputType="number"
+        android:textAlignment="viewStart" />
+
     <RadioGroup
         android:layout_width="wrap_content"
-        android:orientation="horizontal"
-        android:layout_height="wrap_content">
-        <RadioButton
-            android:layout_width="wrap_content"
-            android:text="male"
-            android:id="@+id/maleRadio"
-            android:layout_height="wrap_content" />
-        <RadioButton
-            android:layout_width="wrap_content"
-            android:text="female"
-            android:id="@+id/femaleRadio"
-            android:layout_height="wrap_content" />
-    </RadioGroup>
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:text="age"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:inputType="number"
-            android:id="@+id/ageInfo" />
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:text="weight(lbs)"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:inputType="numberDecimal"
-            android:id="@+id/weightInfo" />
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:text="height(feet)"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:inputType="numberDecimal"
-            android:id="@+id/heightInfo1" />
-        <TextView
-            android:text="inches"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:inputType="numberDecimal"
-            android:id="@+id/heightInfo2" />
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="81dp"
         android:orientation="horizontal">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="User Category"/>
-        <Spinner
-            android:id="@+id/userCategory"
-            android:layout_weight="1"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"></Spinner>
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <Button
-            android:id="@+id/save_user_info"
-            android:layout_width="match_parent"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:text="Save"
-            android:background="@color/colorPrimary"/>
-        <Button
-            android:id="@+id/skip_user_info"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text = "Skip"
-            android:background="@color/colorPrimary"/>
-    </LinearLayout>
 
-</LinearLayout>
+        <RadioButton
+            android:id="@+id/radioMale"
+            android:layout_width="167dp"
+            android:layout_height="wrap_content"
+            android:text="Male" />
+
+        <RadioButton
+            android:id="@+id/radioFemale"
+            android:layout_width="194dp"
+            android:layout_height="wrap_content"
+            android:text="Female" />
+
+    </RadioGroup>
+
+    <EditText
+        android:id="@+id/heightFeet"
+        android:layout_width="156dp"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/weight"
+        android:layout_alignStart="@+id/age"
+        android:ems="10"
+        android:hint="Height (feet)"
+        android:inputType="number" />
+
+    <EditText
+        android:id="@+id/heightInches"
+        android:layout_width="164dp"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/age"
+        android:layout_alignTop="@+id/heightFeet"
+        android:ems="10"
+        android:hint="(Inch)"
+        android:inputType="number" />
+
+    <EditText
+        android:id="@+id/weight"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="265dp"
+        android:ems="10"
+        android:hint="Weight"
+        android:inputType="number" />
+
+    <Spinner
+        android:id="@+id/spinner"
+        android:layout_width="207dp"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/userCat"
+        android:layout_alignEnd="@+id/imageView" />
+
+    <TextView
+        android:id="@+id/userCat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignStart="@+id/imageView"
+        android:layout_marginBottom="209dp"
+        android:text="User category"
+        android:textSize="18sp" />
+
+    <Button
+        android:id="@+id/createButton"
+        android:layout_width="102dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignStart="@+id/age"
+        android:text="Create"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:theme="@style/Themed.Button"/>
+
+    <Button
+        android:id="@+id/skipButton"
+        android:layout_width="107dp"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/imageView"
+        android:layout_alignTop="@+id/createButton"
+        android:text="Skip"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:theme="@style/Themed.Button"/>
+
+    <EditText
+        android:id="@+id/contactNumber"
+        android:layout_width="161dp"
+        android:layout_height="33dp"
+        android:layout_alignEnd="@+id/age"
+        android:layout_alignTop="@+id/textView3"
+        android:ems="10"
+        android:inputType="phone" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="161dp"
+        android:layout_height="37dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignStart="@+id/imageView"
+        android:layout_marginBottom="161dp"
+        android:text="Emargency contact"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignStart="@+id/imageView"
+        android:layout_marginBottom="118dp" />
+
+    <EditText
+        android:id="@+id/medication"
+        android:layout_width="244dp"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/textView4"
+        android:layout_marginEnd="17dp"
+        android:layout_toStartOf="@+id/skipButton"
+        android:ems="10"
+        android:hint="Medication"
+        android:inputType="textPersonName" />
+
+    <Button
+        android:id="@+id/scanBarcode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/age"
+        android:layout_alignTop="@+id/textView4"
+        android:text="Scan barcode"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:theme="@style/Themed.Button"/>
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:paddingBottom="5dp"
+        app:srcCompat="@drawable/medical_icon" />
+
+
+</RelativeLayout>
