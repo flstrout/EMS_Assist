@@ -26,6 +26,8 @@ import com.google.android.gms.vision.barcode.Barcode;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import io.realm.Realm;
 
@@ -36,7 +38,7 @@ public class AssessmentActivity extends AppCompatActivity {
     public static HashMap<String, Drug> drugList = new HashMap<>();
     public static final int BARCODE_REQUEST_CODE = 100;
     boolean connect;
-    int questionId= 0;
+    int questionId = 1;
     String notifyEMS = "Notify EMS";
     TextView questionText;
     Button button1, button2, button3, button4;
@@ -153,6 +155,7 @@ public class AssessmentActivity extends AppCompatActivity {
             }
         });
 
+        new AssessmentActivity.GetDrugData().execute();
         displayNextQuestion(questionId, null);
     }
 
@@ -278,7 +281,7 @@ public class AssessmentActivity extends AppCompatActivity {
                 // Lookup medication and add it to the medication list.
                 int scanFormat = barcode.format;
                 String barcodeData = barcode.displayValue;
-                new AssessmentActivity.GetDrugData().execute();
+
                 Drug drug = drugList.get(barcodeData);
                 Toast.makeText(AssessmentActivity.this, barcodeData, Toast.LENGTH_LONG).show();
                 Toast.makeText(AssessmentActivity.this, drug.getPROPRIETARYNAME(), Toast.LENGTH_LONG).show();
@@ -291,8 +294,9 @@ public class AssessmentActivity extends AppCompatActivity {
         new AlertDialog.Builder(AssessmentActivity.this).setTitle("EMS Message").setMessage("EMS broadcasted, help is on the way").setPositiveButton("Go Back", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                Intent goBackToMain = new Intent(context, MainActivity.class);
-                startActivity(goBackToMain);
+                finish();
+//                Intent goBackToMain = new Intent(context, MainActivity.class);
+//                startActivity(goBackToMain);
             }
         }).show();
     }
@@ -321,8 +325,8 @@ public class AssessmentActivity extends AppCompatActivity {
                 try {
                     jsonStr = jsonStr.replaceAll("\n", "");
                     JSONArray jsonarray = new JSONArray(jsonStr);
-                    Drug drug = new Drug();
                     for(int i=0; i < jsonarray.length(); i++) {
+                        Drug drug = new Drug();
                         JSONObject jsonobject = jsonarray.getJSONObject(i);
                         String PRODUCTID = getJsonString(jsonobject,"productid" );
                         String PRODUCTNDC = getJsonString(jsonobject,"productndc");
