@@ -127,7 +127,6 @@ public class UserInfo extends AppCompatActivity {
         userEditor.putString("userCategory", userCategory );
         userEditor.putString("contactNumber", contactNumber.getText().toString() );
         userEditor.putString("medication", medicationInfo.getText().toString() );
-
         userEditor.putBoolean("userInfoSaved", true);
         userEditor.commit();
         Toast.makeText(this, "New profile created", Toast.LENGTH_LONG).show();
@@ -155,7 +154,6 @@ public class UserInfo extends AppCompatActivity {
                 Drug drug = drugList.get(barcodeData);
                 drugName.append(drug.getPROPRIETARYNAME() + ", ");
                 medicationInfo.setText(drugName);
-
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);
@@ -231,9 +229,7 @@ public class UserInfo extends AppCompatActivity {
                                 .show();
                     }
                 });
-
             }
-
             return null;
         }
 
@@ -256,8 +252,5 @@ public class UserInfo extends AppCompatActivity {
             if (pDialog.isShowing())
                 pDialog.dismiss();
         }
-
     }
-
-
 }

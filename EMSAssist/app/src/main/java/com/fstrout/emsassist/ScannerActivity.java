@@ -44,7 +44,6 @@ public class ScannerActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         mContext = this;
         setContentView(R.layout.activity_scanner);
         cameraView = findViewById(R.id.camera_preview);
@@ -103,5 +102,4 @@ public class ScannerActivity extends AppCompatActivity {
             }
         });
     }
-
 }

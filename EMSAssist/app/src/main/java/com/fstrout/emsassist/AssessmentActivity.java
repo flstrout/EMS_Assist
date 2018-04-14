@@ -31,7 +31,6 @@ import com.google.android.gms.vision.barcode.Barcode;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import io.realm.Realm;
@@ -369,7 +368,7 @@ public class AssessmentActivity extends AppCompatActivity {
         GPSTracker gps = new GPSTracker(AssessmentActivity.this);
         // Check if GPS enabled
         if (gps.canGetLocation()) {
-            
+
             String message = "Help needed!! \n Send help to the location: ";
             String link = "http://maps.google.com/maps?q=loc:" + String.format("%f,%f", gps.getLatitude(), gps.getLongitude());
 

@@ -32,7 +32,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         userInfoPreference =  getApplicationContext().getSharedPreferences("UserPref", MODE_PRIVATE);
+
         if(!(userInfoPreference.getBoolean("userInfoSaved",false) || userInfoPreference.getBoolean("userInfoSkipped",false))){
                 Intent toAddUserInfoPage = new Intent(this, UserInfo.class);
                 startActivity(toAddUserInfoPage);
@@ -41,9 +43,7 @@ public class MainActivity extends AppCompatActivity {
         context = this;
         Realm.init(context);
         realm = Realm.getDefaultInstance();
-
         RealmResults<Questions> questions = realm.where(Questions.class).findAll();
-
         createDefaults();
         listQuestions();
         ImageButton startAssessment = findViewById(R.id.no_ems_button);
