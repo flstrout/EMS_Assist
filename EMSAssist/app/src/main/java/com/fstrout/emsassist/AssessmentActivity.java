@@ -60,6 +60,7 @@ public class AssessmentActivity extends AppCompatActivity {
     DrawerLayout drawerLayout;
     ActionBarDrawerToggle drawerToggle;
     NavigationView navigationView;
+    Realm rlm;
 
 
     @Override
@@ -76,6 +77,7 @@ public class AssessmentActivity extends AppCompatActivity {
         Intent intent = getIntent();
         connect = intent.getBooleanExtra(MainActivity.EXTRA_CONNECT, false);
         inputText = findViewById(R.id.input_field);
+        rlm = Realm.getDefaultInstance();
 
         if (connect){
             questionId = 20000;
@@ -125,7 +127,9 @@ public class AssessmentActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 int tagValue = (int) button1.getTag();
-                displayNextQuestion(tagValue, v, false);
+                Answers answer = rlm.where(Answers.class).equalTo("id", tagValue).findFirst();
+                drugCount = drugCount + answer.getOverdosePenalty();
+                displayNextQuestion(answer.getNextQuestionID(), v, false);
             }
         });
         button2 = findViewById(R.id.selection_two);
@@ -133,7 +137,9 @@ public class AssessmentActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 int tagValue = (int) button2.getTag();
-                displayNextQuestion(tagValue, v, false);
+                Answers answer = rlm.where(Answers.class).equalTo("id", tagValue).findFirst();
+                drugCount = drugCount + answer.getOverdosePenalty();
+                displayNextQuestion(answer.getNextQuestionID(), v, false);
             }
         });
         button3 = findViewById(R.id.selection_three);
@@ -141,7 +147,9 @@ public class AssessmentActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 int tagValue = (int) button3.getTag();
-                displayNextQuestion(tagValue, v, false);
+                Answers answer = rlm.where(Answers.class).equalTo("id", tagValue).findFirst();
+                drugCount = drugCount + answer.getOverdosePenalty();
+                displayNextQuestion(answer.getNextQuestionID(), v, false);
             }
         });
         button4 = findViewById(R.id.selection_four);
@@ -149,7 +157,9 @@ public class AssessmentActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 int tagValue = (int) button4.getTag();
-                displayNextQuestion(tagValue, v, false);
+                Answers answer = rlm.where(Answers.class).equalTo("id", tagValue).findFirst();
+                drugCount = drugCount + answer.getOverdosePenalty();
+                displayNextQuestion(answer.getNextQuestionID(), v, false);
             }
         });
 
@@ -197,7 +207,6 @@ public class AssessmentActivity extends AppCompatActivity {
     }
 
     private void displayNextQuestion(int questionID, View view, boolean firstLoad) {
-        Realm rlm = Realm.getDefaultInstance();
 
         if (questionID == 100000) {
             scanBarcode(view);
@@ -227,7 +236,7 @@ public class AssessmentActivity extends AppCompatActivity {
             switch (question.getAnswers().size()) {
                 case 1:
                     button1.setText(question.getAnswers().get(0).getAnswerText());
-                    button1.setTag(Integer.valueOf(question.getAnswers().get(0).getNextQuestionID()));
+                    button1.setTag(Integer.valueOf(question.getAnswers().get(0).getId()));
                     questionAnswer.add(question.getQuestion());
                     questionAnswer.add(question.getAnswers().get(0).getAnswerText());
                     button1.setVisibility(View.VISIBLE);
@@ -237,11 +246,11 @@ public class AssessmentActivity extends AppCompatActivity {
                     break;
                 case 2:
                     button1.setText(question.getAnswers().get(0).getAnswerText());
-                    button1.setTag(Integer.valueOf(question.getAnswers().get(0).getNextQuestionID()));
+                    button1.setTag(Integer.valueOf(question.getAnswers().get(0).getId()));
                     questionAnswer.add(question.getQuestion());
                     questionAnswer.add(question.getAnswers().get(0).getAnswerText());
                     button2.setText(question.getAnswers().get(1).getAnswerText());
-                    button2.setTag(Integer.valueOf(question.getAnswers().get(1).getNextQuestionID()));
+                    button2.setTag(Integer.valueOf(question.getAnswers().get(1).getId()));
 
                     button1.setVisibility(View.VISIBLE);
                     button2.setVisibility(View.VISIBLE);
@@ -251,14 +260,14 @@ public class AssessmentActivity extends AppCompatActivity {
 
                 case 3:
                     button1.setText(question.getAnswers().get(0).getAnswerText());
-                    button1.setTag(Integer.valueOf(question.getAnswers().get(0).getNextQuestionID()));
+                    button1.setTag(Integer.valueOf(question.getAnswers().get(0).getId()));
                     questionAnswer.add(question.getQuestion());
                     questionAnswer.add(question.getAnswers().get(0).getAnswerText());
                     button2.setText(question.getAnswers().get(1).getAnswerText());
-                    button2.setTag(Integer.valueOf(question.getAnswers().get(1).getNextQuestionID()));
+                    button2.setTag(Integer.valueOf(question.getAnswers().get(1).getId()));
 
                     button3.setText(question.getAnswers().get(2).getAnswerText());
-                    button3.setTag(Integer.valueOf(question.getAnswers().get(2).getNextQuestionID()));
+                    button3.setTag(Integer.valueOf(question.getAnswers().get(2).getId()));
 
                     button1.setVisibility(View.VISIBLE);
                     button2.setVisibility(View.VISIBLE);
@@ -268,17 +277,17 @@ public class AssessmentActivity extends AppCompatActivity {
 
                 default:
                     button1.setText(question.getAnswers().get(0).getAnswerText());
-                    button1.setTag(Integer.valueOf(question.getAnswers().get(0).getNextQuestionID()));
+                    button1.setTag(Integer.valueOf(question.getAnswers().get(0).getId()));
                     questionAnswer.add(question.getQuestion());
                     questionAnswer.add(question.getAnswers().get(0).getAnswerText());
                     button2.setText(question.getAnswers().get(1).getAnswerText());
-                    button2.setTag(Integer.valueOf(question.getAnswers().get(1).getNextQuestionID()));
+                    button2.setTag(Integer.valueOf(question.getAnswers().get(1).getId()));
 
                     button3.setText(question.getAnswers().get(2).getAnswerText());
-                    button3.setTag(Integer.valueOf(question.getAnswers().get(2).getNextQuestionID()));
+                    button3.setTag(Integer.valueOf(question.getAnswers().get(2).getId()));
 
                     button4.setText(question.getAnswers().get(3).getAnswerText());
-                    button4.setTag(Integer.valueOf(question.getAnswers().get(3).getNextQuestionID()));
+                    button4.setTag(Integer.valueOf(question.getAnswers().get(3).getId()));
 
                     button1.setVisibility(View.VISIBLE);
                     button2.setVisibility(View.VISIBLE);
@@ -287,6 +296,17 @@ public class AssessmentActivity extends AppCompatActivity {
                     break;
             }
             inputText.setText("");
+            if (drugCount >= 5) {
+                Snackbar.make(findViewById(android.R.id.content), "Warning! Possible opioid overdose!", Snackbar.LENGTH_LONG)
+                        .setAction("DISMISS", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                // save operations
+                            }
+                        })
+                        .setActionTextColor(Color.RED)
+                        .setDuration(20000).show();
+            }
         }
     }
 
@@ -348,18 +368,6 @@ public class AssessmentActivity extends AppCompatActivity {
                 inputText.setVisibility(View.VISIBLE);
                 inputText.setText(drugName);
                 questionAnswer.add("Medicine list: " + drugName);
-                drugCount++;
-                if (drugCount >= 3) {
-                    Snackbar.make(findViewById(android.R.id.content), "Warning! Possible opioid overdose!", Snackbar.LENGTH_LONG)
-                            .setAction("DISMISS", new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    // save operations
-                                }
-                            })
-                            .setActionTextColor(Color.RED)
-                            .setDuration(20000).show();
-                }
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);
