@@ -21,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
 
     Context context;
     private static final int CAMERA_PERMISSION_REQUEST = 5000;
+    private static final String TAG = "MainActivity";
     Realm realm;
     public static final String EXTRA_CONNECT = "com.fstrout.emsassist.CONNECT";
     @Override
@@ -30,6 +31,8 @@ public class MainActivity extends AppCompatActivity {
         context = this;
         Realm.init(context);
         realm = Realm.getDefaultInstance();
+
+        RealmResults<Questions> questions = realm.where(Questions.class).findAll();
 
         createDefaults();
         listQuestions();
@@ -75,9 +78,11 @@ public class MainActivity extends AppCompatActivity {
                     RealmList<Questions> defaultQuestions = Questions.createDefaults();
 
                     Log.e("defaultQuestion", "Size: " + defaultQuestions.size());
+                    Log.d(TAG, "Saving " + defaultQuestions.size() + "to the Realm database.");
                     realm.copyToRealm(defaultQuestions);
                 }
             });
+
         } else {
             Log.d("CreateDefaults", "Aborted! Database already has records.");
         }

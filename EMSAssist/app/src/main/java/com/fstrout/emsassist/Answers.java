@@ -15,6 +15,7 @@ public class Answers extends RealmObject {
     private int parentID;
     private String answerText;
     private int nextQuestionID;
+    private int overdosePenalty;
 
     public int getId() {
         return id;
@@ -46,5 +47,13 @@ public class Answers extends RealmObject {
 
     public void setNextQuestionID(int nextQuestionID) {
         this.nextQuestionID = nextQuestionID;
+    }
+
+    public int getOverdosePenalty() {
+        return overdosePenalty;
+    }
+
+    public void setOverdosePenalty(int overdosePenalty) {
+        this.overdosePenalty = overdosePenalty;
     }
 }
