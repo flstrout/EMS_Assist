@@ -201,8 +201,10 @@ public class AssessmentActivity extends AppCompatActivity {
 
         if (questionID == 100000) {
             scanBarcode(view);
+        } else if (questionID == 30000) {
+            broadcastEMSAndReturnToMain(true);
         } else if (questionID == 20000 && !firstLoad){
-            broadcastEMSAndReturnToMain();
+            broadcastEMSAndReturnToMain(false);
         } else if (questionID == 4000) {
             repeatAfterFiveMinutes(5);
         } else if (questionID == 5000) {
@@ -364,7 +366,7 @@ public class AssessmentActivity extends AppCompatActivity {
         }
     }
 
-    private void broadcastEMSAndReturnToMain() {
+    private void broadcastEMSAndReturnToMain(boolean overdose) {
 
             GPSTracker gps = new GPSTracker(AssessmentActivity.this);
 
