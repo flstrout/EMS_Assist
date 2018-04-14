@@ -395,10 +395,10 @@ public class Questions extends RealmObject {
         questionList.add(createQuestion(20000,
                 "Panic Button Pressed, Please Choose Reason",
                 false,
-                "Other", 0,0,
-                "Stroke ", 0,0,
-                "Opioid Overdose", 0,0,
-                "Heart Attack", 0,0));
+                "Other", 20000,0,
+                "Stroke ", 20000,0,
+                "Opioid Overdose", 20000,0,
+                "Heart Attack", 20000,0));
         // Create Defaults
         return questionList;
     }

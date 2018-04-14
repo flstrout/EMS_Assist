@@ -74,6 +74,7 @@ public class AssessmentActivity extends AppCompatActivity {
         // Get the connect boolean passed through the Intent.
         Intent intent = getIntent();
         connect = intent.getBooleanExtra(MainActivity.EXTRA_CONNECT, false);
+        inputText = findViewById(R.id.input_field);
 
         if (connect){
             questionId = 20000;
@@ -82,7 +83,6 @@ public class AssessmentActivity extends AppCompatActivity {
             drawerLayout = findViewById(R.id.drawer_layout);
             drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
             navigationView = findViewById(R.id.nav_view);
-            inputText = findViewById(R.id.input_field);
             drawerLayout.addDrawerListener(drawerToggle);
             drawerToggle.syncState();
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -124,11 +124,7 @@ public class AssessmentActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 int tagValue = (int) button1.getTag();
-                if(connect){
-                   broadcastEMSAndReturnToMain();
-                }
-                else
-                    displayNextQuestion(tagValue, v, false);
+                displayNextQuestion(tagValue, v, false);
             }
         });
         button2 = findViewById(R.id.selection_two);
@@ -136,10 +132,7 @@ public class AssessmentActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 int tagValue = (int) button2.getTag();
-                if(connect){
-                    broadcastEMSAndReturnToMain();
-                }
-                else displayNextQuestion(tagValue, v, false);
+                displayNextQuestion(tagValue, v, false);
             }
         });
         button3 = findViewById(R.id.selection_three);
@@ -147,10 +140,7 @@ public class AssessmentActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 int tagValue = (int) button3.getTag();
-                if(connect){
-                    broadcastEMSAndReturnToMain();
-                }
-                else displayNextQuestion(tagValue, v, false);
+                displayNextQuestion(tagValue, v, false);
             }
         });
         button4 = findViewById(R.id.selection_four);
@@ -158,10 +148,7 @@ public class AssessmentActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 int tagValue = (int) button4.getTag();
-                if (connect) {
-                    broadcastEMSAndReturnToMain();
-                }
-                else displayNextQuestion(tagValue, v, false);
+                displayNextQuestion(tagValue, v, false);
             }
         });
 
@@ -223,12 +210,15 @@ public class AssessmentActivity extends AppCompatActivity {
             handOffToEMS();
         } else {
             Questions question = rlm.where(Questions.class).equalTo("id", questionID).findFirst();
-            if (question.inputFieldDisplayed()) {
-                inputText.setVisibility(View.VISIBLE);
-            } else {
-                inputText.setVisibility(View.GONE);
+            if (question != null) {
+                if (question.inputFieldDisplayed()) {
+                    inputText.setVisibility(View.VISIBLE);
+                } else {
+                    inputText.setVisibility(View.GONE);
+                }
+                questionText.setText(question.getQuestion());
             }
-            questionText.setText(question.getQuestion());
+
             // Toast.makeText(AssessmentActivity.this, "Number of answers: " + question.getAnswers().size(), Toast.LENGTH_SHORT).show();
 
             switch (question.getAnswers().size()) {
