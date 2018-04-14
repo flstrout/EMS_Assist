@@ -6,10 +6,6 @@ import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-/**
- * Created by fstrout on 3/25/18.
- *
- */
 
 public class Questions extends RealmObject {
 

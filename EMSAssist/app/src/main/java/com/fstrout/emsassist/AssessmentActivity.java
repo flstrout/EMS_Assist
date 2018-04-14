@@ -4,8 +4,10 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -20,6 +22,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.google.android.gms.vision.barcode.Barcode;
@@ -36,14 +39,18 @@ public class AssessmentActivity extends AppCompatActivity {
 
     Context context;
     public static HashMap<String, Drug> drugList = new HashMap<>();
+    ArrayList<String> questionAnswer = new ArrayList<>();
+
     public static final int BARCODE_REQUEST_CODE = 100;
     boolean connect;
     int questionId = 1;
+    int drugCount = 0;
     String notifyEMS = "Notify EMS";
     TextView questionText;
     Button button1, button2, button3, button4;
-
+    EditText inputText;
     private String TAG = MainActivity.class.getSimpleName();
+    StringBuilder drugName = new StringBuilder();
     private ProgressDialog pDialog;
     // URL to get contacts JSON
     private static String url = "https://hhs-opioid-codeathon.data.socrata.com/resource/9qqv-5nvv.json";
@@ -64,6 +71,7 @@ public class AssessmentActivity extends AppCompatActivity {
         drawerLayout = findViewById(R.id.drawer_layout);
         drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
         navigationView = findViewById(R.id.nav_view);
+        inputText = findViewById(R.id.input_field);
         drawerLayout.addDrawerListener(drawerToggle);
         drawerToggle.syncState();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -172,7 +180,8 @@ public class AssessmentActivity extends AppCompatActivity {
                 case 1:
                     button1.setText(question.getAnswers().get(0).getAnswerText());
                     button1.setTag(Integer.valueOf(question.getAnswers().get(0).getNextQuestionID()));
-
+                    questionAnswer.add(question.getQuestion());
+                    questionAnswer.add(question.getAnswers().get(0).getAnswerText());
                     button1.setVisibility(View.VISIBLE);
                     button2.setVisibility(View.GONE);
                     button3.setVisibility(View.GONE);
@@ -181,7 +190,8 @@ public class AssessmentActivity extends AppCompatActivity {
                 case 2:
                     button1.setText(question.getAnswers().get(0).getAnswerText());
                     button1.setTag(Integer.valueOf(question.getAnswers().get(0).getNextQuestionID()));
-
+                    questionAnswer.add(question.getQuestion());
+                    questionAnswer.add(question.getAnswers().get(0).getAnswerText());
                     button2.setText(question.getAnswers().get(1).getAnswerText());
                     button2.setTag(Integer.valueOf(question.getAnswers().get(1).getNextQuestionID()));
 
@@ -194,7 +204,8 @@ public class AssessmentActivity extends AppCompatActivity {
                 case 3:
                     button1.setText(question.getAnswers().get(0).getAnswerText());
                     button1.setTag(Integer.valueOf(question.getAnswers().get(0).getNextQuestionID()));
-
+                    questionAnswer.add(question.getQuestion());
+                    questionAnswer.add(question.getAnswers().get(0).getAnswerText());
                     button2.setText(question.getAnswers().get(1).getAnswerText());
                     button2.setTag(Integer.valueOf(question.getAnswers().get(1).getNextQuestionID()));
 
@@ -210,7 +221,8 @@ public class AssessmentActivity extends AppCompatActivity {
                 default:
                     button1.setText(question.getAnswers().get(0).getAnswerText());
                     button1.setTag(Integer.valueOf(question.getAnswers().get(0).getNextQuestionID()));
-
+                    questionAnswer.add(question.getQuestion());
+                    questionAnswer.add(question.getAnswers().get(0).getAnswerText());
                     button2.setText(question.getAnswers().get(1).getAnswerText());
                     button2.setTag(Integer.valueOf(question.getAnswers().get(1).getNextQuestionID()));
 
@@ -277,14 +289,28 @@ public class AssessmentActivity extends AppCompatActivity {
             if (data != null) {
                 Barcode barcode = data.getParcelableExtra("barcode");
 
-                // TODO: Do something with the scanned barcode.
                 // Lookup medication and add it to the medication list.
                 int scanFormat = barcode.format;
                 String barcodeData = barcode.displayValue;
-
                 Drug drug = drugList.get(barcodeData);
+                drugName.append(drug.getPROPRIETARYNAME() + ", ");
                 Toast.makeText(AssessmentActivity.this, barcodeData, Toast.LENGTH_LONG).show();
                 Toast.makeText(AssessmentActivity.this, drug.getPROPRIETARYNAME(), Toast.LENGTH_LONG).show();
+                inputText.setVisibility(View.VISIBLE);
+                inputText.setText(drugName);
+                questionAnswer.add("Medicine list: " + drugName);
+                drugCount ++;
+                if(drugCount >= 3 ){
+                Snackbar.make(findViewById(android.R.id.content), "Warning! Possible opioid overdose!", Snackbar.LENGTH_LONG)
+                        .setAction("DISMISS", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                // save operations
+                            }
+                        })
+                        .setActionTextColor(Color.RED)
+                        .setDuration(20000).show();
+                }
             }
         } else {
             super.onActivityResult(requestCode, resultCode, data);
