@@ -31,6 +31,7 @@ import com.google.android.gms.vision.barcode.Barcode;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import io.realm.Realm;
@@ -365,14 +366,17 @@ public class AssessmentActivity extends AppCompatActivity {
 
     private void broadcastEMSAndReturnToMain() {
 
-        GPSTracker gps = new GPSTracker(AssessmentActivity.this);
-        // Check if GPS enabled
-        if (gps.canGetLocation()) {
+            GPSTracker gps = new GPSTracker(AssessmentActivity.this);
 
-            String message = "Help needed!! \n Send help to the location: ";
-            String link = "http://maps.google.com/maps?q=loc:" + String.format("%f,%f", gps.getLatitude(), gps.getLongitude());
+            // Check if GPS enabled
+            if (gps.canGetLocation()) {
 
-            if (!emergencyContact.isEmpty()) {
+                String message = "Help needed!!\nSend help to the location: ";
+                if (overdose) {
+                    message = "Help needed!!\nPossible Opioid Overdose\nSend help to the location: ";
+                }
+                String link = "http://maps.google.com/maps?q=loc:" + String.format("%f,%f", gps.getLatitude(), gps.getLongitude());
+                if (!emergencyContact.isEmpty()) {
                 SmsManager smsManager = SmsManager.getDefault();
                 smsManager.sendTextMessage("+1" + emergencyContact, null, message + link, null, null);
             }

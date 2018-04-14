@@ -397,8 +397,9 @@ public class Questions extends RealmObject {
                 false,
                 "Other", 20000,0,
                 "Stroke ", 20000,0,
-                "Opioid Overdose", 20000,0,
+                "Opioid Overdose", 30000,0,
                 "Heart Attack", 20000,0));
+
         // Create Defaults
         return questionList;
     }
