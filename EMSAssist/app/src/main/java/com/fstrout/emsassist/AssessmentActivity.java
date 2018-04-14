@@ -31,6 +31,7 @@ import com.google.android.gms.vision.barcode.Barcode;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import io.realm.Realm;
@@ -69,55 +70,52 @@ public class AssessmentActivity extends AppCompatActivity {
         toolbar.setTitle("Assess Subject");
         setSupportActionBar(toolbar);
         context = this;
-        drawerLayout = findViewById(R.id.drawer_layout);
-        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
-        navigationView = findViewById(R.id.nav_view);
-        inputText = findViewById(R.id.input_field);
-        drawerLayout.addDrawerListener(drawerToggle);
-        drawerToggle.syncState();
-        userInfoPreference = getApplicationContext().getSharedPreferences("UserPref", MODE_PRIVATE);
-        emergencyContact = userInfoPreference.getString("contactNumber", "");
-
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-
-                switch (item.getItemId()) {
-                    case R.id.start:
-                        displayNextQuestion(1, null);
-                        drawerLayout.closeDrawer(GravityCompat.START);
-                        return true;
-                    case R.id.alert_level:
-                        displayNextQuestion(50, null);
-                        drawerLayout.closeDrawer(GravityCompat.START);
-                        return true;
-                    case R.id.breathing:
-                        displayNextQuestion(600, null);
-                        drawerLayout.closeDrawer(GravityCompat.START);
-                        return true;
-                    case R.id.interview:
-                        displayNextQuestion(100, null);
-                        drawerLayout.closeDrawer(GravityCompat.START);
-                        return true;
-                    case R.id.head_to_toe:
-                        displayNextQuestion(1000, null);
-                        drawerLayout.closeDrawer(GravityCompat.START);
-                        return true;
-                    default:
-                        return false;
-                }
-            }
-        });
 
         // Get the connect boolean passed through the Intent.
         Intent intent = getIntent();
         connect = intent.getBooleanExtra(MainActivity.EXTRA_CONNECT, false);
 
-
-        if (connect) {
-            Toast.makeText(context, notifyEMS, Toast.LENGTH_LONG).show();
+        if (connect){
             questionId = 20000;
+        } else {
+
+            drawerLayout = findViewById(R.id.drawer_layout);
+            drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
+            navigationView = findViewById(R.id.nav_view);
+            inputText = findViewById(R.id.input_field);
+            drawerLayout.addDrawerListener(drawerToggle);
+            drawerToggle.syncState();
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+                @Override
+                public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
+                    switch (item.getItemId()) {
+                        case R.id.start:
+                            displayNextQuestion(1, null, true);
+                            drawerLayout.closeDrawer(GravityCompat.START);
+                            return true;
+                        case R.id.alert_level:
+                            displayNextQuestion(50, null, true);
+                            drawerLayout.closeDrawer(GravityCompat.START);
+                            return true;
+                        case R.id.breathing:
+                            displayNextQuestion(600, null, true);
+                            drawerLayout.closeDrawer(GravityCompat.START);
+                            return true;
+                        case R.id.interview:
+                            displayNextQuestion(100, null, true);
+                            drawerLayout.closeDrawer(GravityCompat.START);
+                            return true;
+                        case R.id.head_to_toe:
+                            displayNextQuestion(1000, null, true);
+                            drawerLayout.closeDrawer(GravityCompat.START);
+                            return true;
+                        default:
+                            return false;
+                    }
+                }
+            });
         }
         questionText = findViewById(R.id.question_text);
 
@@ -126,10 +124,11 @@ public class AssessmentActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 int tagValue = (int) button1.getTag();
-                if (connect) {
-                    broadcastEMSAndReturnToMain();
-                } else
-                    displayNextQuestion(tagValue, v);
+                if(connect){
+                   broadcastEMSAndReturnToMain();
+                }
+                else
+                    displayNextQuestion(tagValue, v, false);
             }
         });
         button2 = findViewById(R.id.selection_two);
@@ -137,9 +136,10 @@ public class AssessmentActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 int tagValue = (int) button2.getTag();
-                if (connect) {
+                if(connect){
                     broadcastEMSAndReturnToMain();
-                } else displayNextQuestion(tagValue, v);
+                }
+                else displayNextQuestion(tagValue, v, false);
             }
         });
         button3 = findViewById(R.id.selection_three);
@@ -147,9 +147,10 @@ public class AssessmentActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 int tagValue = (int) button3.getTag();
-                if (connect) {
+                if(connect){
                     broadcastEMSAndReturnToMain();
-                } else displayNextQuestion(tagValue, v);
+                }
+                else displayNextQuestion(tagValue, v, false);
             }
         });
         button4 = findViewById(R.id.selection_four);
@@ -159,20 +160,74 @@ public class AssessmentActivity extends AppCompatActivity {
                 int tagValue = (int) button4.getTag();
                 if (connect) {
                     broadcastEMSAndReturnToMain();
-                } else displayNextQuestion(tagValue, v);
+                }
+                else displayNextQuestion(tagValue, v, false);
             }
         });
 
         new AssessmentActivity.GetDrugData().execute();
-        displayNextQuestion(questionId, null);
+        displayNextQuestion(questionId, null, true);
     }
 
-    private void displayNextQuestion(int questionID, View view) {
+    private int repeatID = 1000;
+    private void repeatAfterFiveMinutes(final int minutes){
+        String title = "";
+        String message = "";
+        switch (minutes) {
+            case 5:
+                repeatID = 1000;
+                title = "Head-to-Check Complete";
+                message = "Repeat Head-to-Check every " + minutes + " minutes until EMS arrives.";
+                break;
+            case 15:
+                repeatID = 200;
+                title = "Interview Complete";
+                message = "Repeat Interview every " + minutes + " minutes until EMS arrives.";
+                break;
+            default:
+                repeatID = 1000;
+                title = "Head-to-Check Complete";
+                message = "Repeat Head-to-Check every " + minutes + " minutes until EMS arrives.";
+                break;
+        }
+
+        new AlertDialog.Builder(AssessmentActivity.this).setTitle(title).setMessage(message).setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                displayNextQuestion(repeatID, null, true);
+            }
+        }).show();
+    }
+
+    private void handOffToEMS(){
+        new AlertDialog.Builder(AssessmentActivity.this).setTitle("Hand-Off To EMS").setMessage("Thank you for your assistance.\nGood Day!").setPositiveButton("Home", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                finish();
+            }
+        }).show();
+    }
+
+    private void displayNextQuestion(int questionID, View view, boolean firstLoad) {
         Realm rlm = Realm.getDefaultInstance();
+
         if (questionID == 100000) {
             scanBarcode(view);
+        } else if (questionID == 20000 && !firstLoad){
+            broadcastEMSAndReturnToMain();
+        } else if (questionID == 4000) {
+            repeatAfterFiveMinutes(5);
+        } else if (questionID == 5000) {
+            repeatAfterFiveMinutes(15);
+        } else if (questionID == 6000) {
+            handOffToEMS();
         } else {
             Questions question = rlm.where(Questions.class).equalTo("id", questionID).findFirst();
+            if (question.inputFieldDisplayed()) {
+                inputText.setVisibility(View.VISIBLE);
+            } else {
+                inputText.setVisibility(View.GONE);
+            }
             questionText.setText(question.getQuestion());
             // Toast.makeText(AssessmentActivity.this, "Number of answers: " + question.getAnswers().size(), Toast.LENGTH_SHORT).show();
 
@@ -238,6 +293,7 @@ public class AssessmentActivity extends AppCompatActivity {
                     button4.setVisibility(View.VISIBLE);
                     break;
             }
+            inputText.setText("");
         }
     }
 
@@ -285,7 +341,7 @@ public class AssessmentActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == BARCODE_REQUEST_CODE && resultCode == RESULT_OK) {
+        if(requestCode == BARCODE_REQUEST_CODE && resultCode == RESULT_OK) {
             if (data != null) {
                 Barcode barcode = data.getParcelableExtra("barcode");
 
@@ -343,100 +399,100 @@ public class AssessmentActivity extends AppCompatActivity {
         }
     }
 
-        private class GetDrugData extends AsyncTask<Void, Void, Void> {
+    private class GetDrugData extends AsyncTask<Void, Void, Void> {
 
-            @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-                // Showing progress dialog
-                pDialog = new ProgressDialog(AssessmentActivity.this);
-                pDialog.setMessage("Please wait...");
-                pDialog.setCancelable(false);
-                pDialog.show();
-            }
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            // Showing progress dialog
+            pDialog = new ProgressDialog(AssessmentActivity.this);
+            pDialog.setMessage("Please wait...");
+            pDialog.setCancelable(false);
+            pDialog.show();
+        }
 
-            @Override
-            protected Void doInBackground(Void... arg0) {
-                HttpHandler sh = new HttpHandler();
+        @Override
+        protected Void doInBackground(Void... arg0) {
+            HttpHandler sh = new HttpHandler();
 
-                // Making a request to url and getting response
-                String jsonStr = sh.makeServiceCall(url);
-                Log.e(TAG, "Response from url: " + jsonStr);
+            // Making a request to url and getting response
+            String jsonStr = sh.makeServiceCall(url);
+            Log.e(TAG, "Response from url: " + jsonStr);
 
-                if (jsonStr != null) {
-                    try {
-                        jsonStr = jsonStr.replaceAll("\n", "");
-                        JSONArray jsonarray = new JSONArray(jsonStr);
-                        for (int i = 0; i < jsonarray.length(); i++) {
-                            Drug drug = new Drug();
-                            JSONObject jsonobject = jsonarray.getJSONObject(i);
-                            String PRODUCTID = getJsonString(jsonobject, "productid");
-                            String PRODUCTNDC = getJsonString(jsonobject, "productndc");
-                            String PRODUCTTYPENAME = getJsonString(jsonobject, "producttypename");
-                            String PROPRIETARYNAME = getJsonString(jsonobject, "proprietaryname");
-                            String PROPRIETARYNAMESUFFIX = getJsonString(jsonobject, "proprietarynames");
-                            String NONPROPRIETARYNAME = getJsonString(jsonobject, "nonproprietaryname");
-                            String DOSAGEFORMNAME = getJsonString(jsonobject, "dosageformname");
+            if (jsonStr != null) {
+                try {
+                    jsonStr = jsonStr.replaceAll("\n", "");
+                    JSONArray jsonarray = new JSONArray(jsonStr);
+                    for(int i=0; i < jsonarray.length(); i++) {
+                        Drug drug = new Drug();
+                        JSONObject jsonobject = jsonarray.getJSONObject(i);
+                        String PRODUCTID = getJsonString(jsonobject,"productid" );
+                        String PRODUCTNDC = getJsonString(jsonobject,"productndc");
+                        String PRODUCTTYPENAME = getJsonString(jsonobject,"producttypename");
+                        String PROPRIETARYNAME = getJsonString(jsonobject,"proprietaryname");
+                        String PROPRIETARYNAMESUFFIX = getJsonString(jsonobject,"proprietarynames");
+                        String NONPROPRIETARYNAME = getJsonString(jsonobject,"nonproprietaryname");
+                        String DOSAGEFORMNAME = getJsonString(jsonobject,"dosageformname");
 
-                            drug.setPRODUCTID(PRODUCTID);
-                            drug.setPRODUCTNDC(PRODUCTNDC);
-                            drug.setPRODUCTTYPENAME(PRODUCTTYPENAME);
-                            drug.setPROPRIETARYNAME(PROPRIETARYNAME);
-                            drug.setPROPRIETARYNAMESUFFIX(PROPRIETARYNAMESUFFIX);
-                            drug.setNONPROPRIETARYNAME(NONPROPRIETARYNAME);
-                            drug.setDOSAGEFORMNAME(DOSAGEFORMNAME);
-                            drugList.put(PRODUCTNDC, drug);
-                        }
-
-                    } catch (final JSONException e) {
-                        Log.e(TAG, "Json parsing error: " + e.getMessage());
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(getApplicationContext(),
-                                        "Json parsing error: " + e.getMessage(),
-                                        Toast.LENGTH_LONG)
-                                        .show();
-                            }
-                        });
-
+                        drug.setPRODUCTID(PRODUCTID);
+                        drug.setPRODUCTNDC(PRODUCTNDC);
+                        drug.setPRODUCTTYPENAME(PRODUCTTYPENAME);
+                        drug.setPROPRIETARYNAME(PROPRIETARYNAME);
+                        drug.setPROPRIETARYNAMESUFFIX(PROPRIETARYNAMESUFFIX);
+                        drug.setNONPROPRIETARYNAME(NONPROPRIETARYNAME);
+                        drug.setDOSAGEFORMNAME(DOSAGEFORMNAME);
+                        drugList.put(PRODUCTNDC, drug);
                     }
-                } else {
-                    Log.e(TAG, "Couldn't get json from server.");
+
+                } catch (final JSONException e) {
+                    Log.e(TAG, "Json parsing error: " + e.getMessage());
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             Toast.makeText(getApplicationContext(),
-                                    "Couldn't get json from server. Check LogCat for possible errors!",
+                                    "Json parsing error: " + e.getMessage(),
                                     Toast.LENGTH_LONG)
                                     .show();
                         }
                     });
 
                 }
+            } else {
+                Log.e(TAG, "Couldn't get json from server.");
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getApplicationContext(),
+                                "Couldn't get json from server. Check LogCat for possible errors!",
+                                Toast.LENGTH_LONG)
+                                .show();
+                    }
+                });
+
+                }
 
                 return null;
             }
 
-            public String getJsonString(JSONObject jso, String field) {
-                if (jso.isNull(field))
+        public String getJsonString(JSONObject jso, String field) {
+            if(jso.isNull(field))
+                return null;
+            else
+                try {
+                    return jso.getString(field);
+                }
+                catch(Exception ex) {
                     return null;
-                else
-                    try {
-                        return jso.getString(field);
-                    } catch (Exception ex) {
-                        return null;
-                    }
-            }
-
-            @Override
-            protected void onPostExecute(Void result) {
-                super.onPostExecute(result);
-                // Dismiss the progress dialog
-                if (pDialog.isShowing())
-                    pDialog.dismiss();
-            }
-
+                }
         }
-    }
 
+        @Override
+        protected void onPostExecute(Void result) {
+            super.onPostExecute(result);
+            // Dismiss the progress dialog
+            if (pDialog.isShowing())
+                pDialog.dismiss();
+        }
+
+    }
+}
