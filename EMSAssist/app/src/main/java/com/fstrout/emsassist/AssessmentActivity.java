@@ -366,16 +366,14 @@ public class AssessmentActivity extends AppCompatActivity {
 
     private void broadcastEMSAndReturnToMain() {
 
+        GPSTracker gps = new GPSTracker(AssessmentActivity.this);
+        // Check if GPS enabled
+        if (gps.canGetLocation()) {
+            
+            String message = "Help needed!! \n Send help to the location: ";
+            String link = "http://maps.google.com/maps?q=loc:" + String.format("%f,%f", gps.getLatitude(), gps.getLongitude());
 
-
-            GPSTracker gps = new GPSTracker(AssessmentActivity.this);
-
-            // Check if GPS enabled
-            if (gps.canGetLocation()) {
-
-                String message = "Help needed!! \n Send help to the location: ";
-                String link = "http://maps.google.com/maps?q=loc:" + String.format("%f,%f", gps.getLatitude(), gps.getLongitude());
-                if (!emergencyContact.isEmpty()) {
+            if (!emergencyContact.isEmpty()) {
                 SmsManager smsManager = SmsManager.getDefault();
                 smsManager.sendTextMessage("+1" + emergencyContact, null, message + link, null, null);
             }
