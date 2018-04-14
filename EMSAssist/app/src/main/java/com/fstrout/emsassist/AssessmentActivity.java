@@ -67,53 +67,54 @@ public class AssessmentActivity extends AppCompatActivity {
         toolbar.setTitle("Assess Subject");
         setSupportActionBar(toolbar);
         context = this;
-        drawerLayout = findViewById(R.id.drawer_layout);
-        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
-        navigationView = findViewById(R.id.nav_view);
-        inputText = findViewById(R.id.input_field);
-        drawerLayout.addDrawerListener(drawerToggle);
-        drawerToggle.syncState();
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-
-                switch (item.getItemId()) {
-                    case R.id.start:
-                        displayNextQuestion(1, null);
-                        drawerLayout.closeDrawer(GravityCompat.START);
-                        return true;
-                    case R.id.alert_level:
-                        displayNextQuestion(50, null);
-                        drawerLayout.closeDrawer(GravityCompat.START);
-                        return true;
-                    case R.id.breathing:
-                        displayNextQuestion(600, null);
-                        drawerLayout.closeDrawer(GravityCompat.START);
-                        return true;
-                    case R.id.interview:
-                        displayNextQuestion(100, null);
-                        drawerLayout.closeDrawer(GravityCompat.START);
-                        return true;
-                    case R.id.head_to_toe:
-                        displayNextQuestion(1000, null);
-                        drawerLayout.closeDrawer(GravityCompat.START);
-                        return true;
-                    default:
-                        return false;
-                }
-            }
-        });
 
         // Get the connect boolean passed through the Intent.
         Intent intent = getIntent();
         connect = intent.getBooleanExtra(MainActivity.EXTRA_CONNECT, false);
 
-
         if (connect){
-            Toast.makeText(context, notifyEMS, Toast.LENGTH_LONG).show();
             questionId = 20000;
+        } else {
+
+            drawerLayout = findViewById(R.id.drawer_layout);
+            drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
+            navigationView = findViewById(R.id.nav_view);
+            inputText = findViewById(R.id.input_field);
+            drawerLayout.addDrawerListener(drawerToggle);
+            drawerToggle.syncState();
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+                @Override
+                public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
+                    switch (item.getItemId()) {
+                        case R.id.start:
+                            displayNextQuestion(1, null, true);
+                            drawerLayout.closeDrawer(GravityCompat.START);
+                            return true;
+                        case R.id.alert_level:
+                            displayNextQuestion(50, null, true);
+                            drawerLayout.closeDrawer(GravityCompat.START);
+                            return true;
+                        case R.id.breathing:
+                            displayNextQuestion(600, null, true);
+                            drawerLayout.closeDrawer(GravityCompat.START);
+                            return true;
+                        case R.id.interview:
+                            displayNextQuestion(100, null, true);
+                            drawerLayout.closeDrawer(GravityCompat.START);
+                            return true;
+                        case R.id.head_to_toe:
+                            displayNextQuestion(1000, null, true);
+                            drawerLayout.closeDrawer(GravityCompat.START);
+                            return true;
+                        default:
+                            return false;
+                    }
+                }
+            });
         }
+
         questionText = findViewById(R.id.question_text);
 
         button1 = findViewById(R.id.selection_one);
@@ -125,7 +126,7 @@ public class AssessmentActivity extends AppCompatActivity {
                    broadcastEMSAndReturnToMain();
                 }
                 else
-                    displayNextQuestion(tagValue, v);
+                    displayNextQuestion(tagValue, v, false);
             }
         });
         button2 = findViewById(R.id.selection_two);
@@ -136,7 +137,7 @@ public class AssessmentActivity extends AppCompatActivity {
                 if(connect){
                     broadcastEMSAndReturnToMain();
                 }
-                else displayNextQuestion(tagValue, v);
+                else displayNextQuestion(tagValue, v, false);
             }
         });
         button3 = findViewById(R.id.selection_three);
@@ -147,7 +148,7 @@ public class AssessmentActivity extends AppCompatActivity {
                 if(connect){
                     broadcastEMSAndReturnToMain();
                 }
-                else displayNextQuestion(tagValue, v);
+                else displayNextQuestion(tagValue, v, false);
             }
         });
         button4 = findViewById(R.id.selection_four);
@@ -158,22 +159,74 @@ public class AssessmentActivity extends AppCompatActivity {
                 if (connect) {
                     broadcastEMSAndReturnToMain();
                 }
-                else displayNextQuestion(tagValue, v);
+                else displayNextQuestion(tagValue, v, false);
             }
         });
 
         new AssessmentActivity.GetDrugData().execute();
-        displayNextQuestion(questionId, null);
+        displayNextQuestion(questionId, null, true);
     }
 
-    private void displayNextQuestion(int questionID, View view) {
+    private int repeatID = 1000;
+    private void repeatAfterFiveMinutes(final int minutes){
+        String title = "";
+        String message = "";
+        switch (minutes) {
+            case 5:
+                repeatID = 1000;
+                title = "Head-to-Check Complete";
+                message = "Repeat Head-to-Check every " + minutes + " minutes until EMS arrives.";
+                break;
+            case 15:
+                repeatID = 200;
+                title = "Interview Complete";
+                message = "Repeat Interview every " + minutes + " minutes until EMS arrives.";
+                break;
+            default:
+                repeatID = 1000;
+                title = "Head-to-Check Complete";
+                message = "Repeat Head-to-Check every " + minutes + " minutes until EMS arrives.";
+                break;
+        }
+
+        new AlertDialog.Builder(AssessmentActivity.this).setTitle(title).setMessage(message).setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                displayNextQuestion(repeatID, null, true);
+            }
+        }).show();
+    }
+
+    private void handOffToEMS(){
+        new AlertDialog.Builder(AssessmentActivity.this).setTitle("Hand-Off To EMS").setMessage("Thank you for your assistance.\nGood Day!").setPositiveButton("Home", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                finish();
+            }
+        }).show();
+    }
+
+    private void displayNextQuestion(int questionID, View view, boolean firstLoad) {
         Realm rlm = Realm.getDefaultInstance();
+
         if (questionID == 100000) {
             scanBarcode(view);
+        } else if (questionID == 20000 && !firstLoad){
+            broadcastEMSAndReturnToMain();
+        } else if (questionID == 4000) {
+            repeatAfterFiveMinutes(5);
+        } else if (questionID == 5000) {
+            repeatAfterFiveMinutes(15);
+        } else if (questionID == 6000) {
+            handOffToEMS();
         } else {
             Questions question = rlm.where(Questions.class).equalTo("id", questionID).findFirst();
+            if (question.inputFieldDisplayed()) {
+                inputText.setVisibility(View.VISIBLE);
+            } else {
+                inputText.setVisibility(View.GONE);
+            }
             questionText.setText(question.getQuestion());
-            // Toast.makeText(AssessmentActivity.this, "Number of answers: " + question.getAnswers().size(), Toast.LENGTH_SHORT).show();
 
             switch (question.getAnswers().size()) {
                 case 1:
@@ -237,6 +290,7 @@ public class AssessmentActivity extends AppCompatActivity {
                     button4.setVisibility(View.VISIBLE);
                     break;
             }
+            inputText.setText("");
         }
     }
 
@@ -315,13 +369,12 @@ public class AssessmentActivity extends AppCompatActivity {
             super.onActivityResult(requestCode, resultCode, data);
         }
     }
+
     private void broadcastEMSAndReturnToMain(){
         new AlertDialog.Builder(AssessmentActivity.this).setTitle("EMS Message").setMessage("EMS broadcasted, help is on the way").setPositiveButton("Go Back", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 finish();
-//                Intent goBackToMain = new Intent(context, MainActivity.class);
-//                startActivity(goBackToMain);
             }
         }).show();
     }
@@ -397,7 +450,6 @@ public class AssessmentActivity extends AppCompatActivity {
                 });
 
             }
-
             return null;
         }
 

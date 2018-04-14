@@ -99,7 +99,6 @@ public class ScannerActivity extends AppCompatActivity {
                     intent.putExtra("barcode", barcodes.valueAt(0));
                     setResult(RESULT_OK, intent);
                     finish();
-
                 }
             }
         });
