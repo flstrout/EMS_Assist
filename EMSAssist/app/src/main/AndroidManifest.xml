@@ -23,6 +23,8 @@
             android:label="@string/title_activity_assessment"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
+        <activity android:name=".UserInfo"
+            android:label="UserInfo"></activity>
         <activity android:name=".ScannerActivity"
             android:label="Scan Barcode"/>
         <meta-data

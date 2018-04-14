@@ -3,6 +3,7 @@ package com.fstrout.emsassist;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.support.v4.app.ActivityCompat;
@@ -23,10 +24,18 @@ public class MainActivity extends AppCompatActivity {
     private static final int CAMERA_PERMISSION_REQUEST = 5000;
     Realm realm;
     public static final String EXTRA_CONNECT = "com.fstrout.emsassist.CONNECT";
+    SharedPreferences userInfoPreference;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        userInfoPreference =  getApplicationContext().getSharedPreferences("UserPref", MODE_PRIVATE);
+           if(!(userInfoPreference.getBoolean("userInfoSaved",false) || userInfoPreference.getBoolean("userInfoSkipped",false))){
+                Intent toAddUserInfoPage = new Intent(this, UserInfo.class);
+                startActivity(toAddUserInfoPage);
+          }
+
         context = this;
         Realm.init(context);
         realm = Realm.getDefaultInstance();
