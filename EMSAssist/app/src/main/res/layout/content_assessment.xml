@@ -8,18 +8,46 @@
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.fstrout.emsassist.AssessmentActivity"
-    android:background="#effff6"
+    android:background="@color/colorLight"
     tools:showIn="@layout/activity_assessment">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <LinearLayout
+            android:id="@+id/od_warning"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:background="@color/colorPrimaryDark"
+            android:visibility="gone"
+            android:layout_margin="2dp"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:paddingTop="4dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Warning: Possible Opioid Overdose"
+                android:textColor="#ff0000"
+                android:textSize="20sp"
+                android:gravity="center"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="If you have acces to Naloxone, administer a dose."
+                android:textColor="#bbff0000"
+                android:textSize="14sp"
+                android:gravity="center"/>
+        </LinearLayout>
         <TextView
             android:id="@+id/question_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
+            android:layout_below="@+id/od_warning"
             android:layout_margin="8dp"
             android:textSize="22sp"
             android:textColor="@color/colorPrimaryDark"/>
@@ -28,14 +56,16 @@
             android:id="@+id/input_field"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/row_top"
-            android:layout_margin="4dp"
+            android:layout_below="@id/question_text"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="4dp"
+            android:layout_marginTop="10dp"
             android:visibility="gone" />
 
         <LinearLayout
             android:id="@+id/row_top"
             android:layout_width="match_parent"
-            android:layout_height="110dp"
+            android:layout_height="wrap_content"
             android:layout_above="@id/row_bottom"
             android:layout_marginStart="4dp"
             android:layout_marginEnd="4dp"
@@ -63,7 +93,7 @@
         <LinearLayout
             android:id="@+id/row_bottom"
             android:layout_width="match_parent"
-            android:layout_height="110dp"
+            android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_marginStart="4dp"
             android:layout_marginEnd="4dp"

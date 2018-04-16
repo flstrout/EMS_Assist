@@ -5,10 +5,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -25,6 +23,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.google.android.gms.vision.barcode.Barcode;
@@ -46,7 +45,7 @@ public class AssessmentActivity extends AppCompatActivity {
     public static final int BARCODE_REQUEST_CODE = 100;
     boolean connect;
     int questionId = 1;
-    int drugCount = 0;
+    int drugPenalty = 0;
     String notifyEMS = "Notify EMS";
     TextView questionText;
     Button button1, button2, button3, button4;
@@ -54,19 +53,19 @@ public class AssessmentActivity extends AppCompatActivity {
     private String TAG = MainActivity.class.getSimpleName();
     StringBuilder drugName = new StringBuilder();
     private ProgressDialog pDialog;
-    // URL to get contacts JSON
-    private static String url = "https://hhs-opioid-codeathon.data.socrata.com/resource/9qqv-5nvv.json";
     String emergencyContact = "";
     DrawerLayout drawerLayout;
     ActionBarDrawerToggle drawerToggle;
     NavigationView navigationView;
     Realm rlm;
+    LinearLayout odWarningLayout;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_assessment);
+        odWarningLayout = findViewById(R.id.od_warning);
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("Assess Subject");
         setSupportActionBar(toolbar);
@@ -114,6 +113,10 @@ public class AssessmentActivity extends AppCompatActivity {
                             displayNextQuestion(1000, null, true);
                             drawerLayout.closeDrawer(GravityCompat.START);
                             return true;
+                        case R.id.exit:
+                            drawerLayout.closeDrawer(GravityCompat.START);
+                            finish();
+                            return true;
                         default:
                             return false;
                     }
@@ -128,7 +131,7 @@ public class AssessmentActivity extends AppCompatActivity {
             public void onClick(View v) {
                 int tagValue = (int) button1.getTag();
                 Answers answer = rlm.where(Answers.class).equalTo("id", tagValue).findFirst();
-                drugCount = drugCount + answer.getOverdosePenalty();
+                drugPenalty = drugPenalty + answer.getOverdosePenalty();
                 displayNextQuestion(answer.getNextQuestionID(), v, false);
             }
         });
@@ -138,7 +141,7 @@ public class AssessmentActivity extends AppCompatActivity {
             public void onClick(View v) {
                 int tagValue = (int) button2.getTag();
                 Answers answer = rlm.where(Answers.class).equalTo("id", tagValue).findFirst();
-                drugCount = drugCount + answer.getOverdosePenalty();
+                drugPenalty = drugPenalty + answer.getOverdosePenalty();
                 displayNextQuestion(answer.getNextQuestionID(), v, false);
             }
         });
@@ -148,7 +151,7 @@ public class AssessmentActivity extends AppCompatActivity {
             public void onClick(View v) {
                 int tagValue = (int) button3.getTag();
                 Answers answer = rlm.where(Answers.class).equalTo("id", tagValue).findFirst();
-                drugCount = drugCount + answer.getOverdosePenalty();
+                drugPenalty = drugPenalty + answer.getOverdosePenalty();
                 displayNextQuestion(answer.getNextQuestionID(), v, false);
             }
         });
@@ -158,7 +161,7 @@ public class AssessmentActivity extends AppCompatActivity {
             public void onClick(View v) {
                 int tagValue = (int) button4.getTag();
                 Answers answer = rlm.where(Answers.class).equalTo("id", tagValue).findFirst();
-                drugCount = drugCount + answer.getOverdosePenalty();
+                drugPenalty = drugPenalty + answer.getOverdosePenalty();
                 displayNextQuestion(answer.getNextQuestionID(), v, false);
             }
         });
@@ -231,12 +234,10 @@ public class AssessmentActivity extends AppCompatActivity {
                 questionText.setText(question.getQuestion());
             }
 
-            // Toast.makeText(AssessmentActivity.this, "Number of answers: " + question.getAnswers().size(), Toast.LENGTH_SHORT).show();
-
             switch (question.getAnswers().size()) {
                 case 1:
                     button1.setText(question.getAnswers().get(0).getAnswerText());
-                    button1.setTag(Integer.valueOf(question.getAnswers().get(0).getId()));
+                    button1.setTag(question.getAnswers().get(0).getId());
                     questionAnswer.add(question.getQuestion());
                     questionAnswer.add(question.getAnswers().get(0).getAnswerText());
                     button1.setVisibility(View.VISIBLE);
@@ -246,11 +247,11 @@ public class AssessmentActivity extends AppCompatActivity {
                     break;
                 case 2:
                     button1.setText(question.getAnswers().get(0).getAnswerText());
-                    button1.setTag(Integer.valueOf(question.getAnswers().get(0).getId()));
+                    button1.setTag(question.getAnswers().get(0).getId());
                     questionAnswer.add(question.getQuestion());
                     questionAnswer.add(question.getAnswers().get(0).getAnswerText());
                     button2.setText(question.getAnswers().get(1).getAnswerText());
-                    button2.setTag(Integer.valueOf(question.getAnswers().get(1).getId()));
+                    button2.setTag(question.getAnswers().get(1).getId());
 
                     button1.setVisibility(View.VISIBLE);
                     button2.setVisibility(View.VISIBLE);
@@ -260,14 +261,14 @@ public class AssessmentActivity extends AppCompatActivity {
 
                 case 3:
                     button1.setText(question.getAnswers().get(0).getAnswerText());
-                    button1.setTag(Integer.valueOf(question.getAnswers().get(0).getId()));
+                    button1.setTag(question.getAnswers().get(0).getId());
                     questionAnswer.add(question.getQuestion());
                     questionAnswer.add(question.getAnswers().get(0).getAnswerText());
                     button2.setText(question.getAnswers().get(1).getAnswerText());
-                    button2.setTag(Integer.valueOf(question.getAnswers().get(1).getId()));
+                    button2.setTag(question.getAnswers().get(1).getId());
 
                     button3.setText(question.getAnswers().get(2).getAnswerText());
-                    button3.setTag(Integer.valueOf(question.getAnswers().get(2).getId()));
+                    button3.setTag(question.getAnswers().get(2).getId());
 
                     button1.setVisibility(View.VISIBLE);
                     button2.setVisibility(View.VISIBLE);
@@ -277,17 +278,17 @@ public class AssessmentActivity extends AppCompatActivity {
 
                 default:
                     button1.setText(question.getAnswers().get(0).getAnswerText());
-                    button1.setTag(Integer.valueOf(question.getAnswers().get(0).getId()));
+                    button1.setTag(question.getAnswers().get(0).getId());
                     questionAnswer.add(question.getQuestion());
                     questionAnswer.add(question.getAnswers().get(0).getAnswerText());
                     button2.setText(question.getAnswers().get(1).getAnswerText());
-                    button2.setTag(Integer.valueOf(question.getAnswers().get(1).getId()));
+                    button2.setTag(question.getAnswers().get(1).getId());
 
                     button3.setText(question.getAnswers().get(2).getAnswerText());
-                    button3.setTag(Integer.valueOf(question.getAnswers().get(2).getId()));
+                    button3.setTag(question.getAnswers().get(2).getId());
 
                     button4.setText(question.getAnswers().get(3).getAnswerText());
-                    button4.setTag(Integer.valueOf(question.getAnswers().get(3).getId()));
+                    button4.setTag(question.getAnswers().get(3).getId());
 
                     button1.setVisibility(View.VISIBLE);
                     button2.setVisibility(View.VISIBLE);
@@ -296,16 +297,17 @@ public class AssessmentActivity extends AppCompatActivity {
                     break;
             }
             inputText.setText("");
-            if (drugCount >= 5) {
-                Snackbar.make(findViewById(android.R.id.content), "Warning! Possible opioid overdose!", Snackbar.LENGTH_LONG)
-                        .setAction("DISMISS", new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                // save operations
-                            }
-                        })
-                        .setActionTextColor(Color.RED)
-                        .setDuration(20000).show();
+            if (drugPenalty >= 5) {
+                odWarningLayout.setVisibility(View.VISIBLE);
+//                Snackbar.make(findViewById(android.R.id.content), "Warning! Possible opioid overdose!", Snackbar.LENGTH_LONG)
+//                        .setAction("DISMISS", new View.OnClickListener() {
+//                            @Override
+//                            public void onClick(View v) {
+//                                // save operations
+//                            }
+//                        })
+//                        .setActionTextColor(Color.RED)
+//                        .setDuration(20000).show();
             }
         }
     }
@@ -359,7 +361,6 @@ public class AssessmentActivity extends AppCompatActivity {
                 Barcode barcode = data.getParcelableExtra("barcode");
 
                 // Lookup medication and add it to the medication list.
-                int scanFormat = barcode.format;
                 String barcodeData = barcode.displayValue;
                 Drug drug = drugList.get(barcodeData);
                 drugName.append(drug.getPROPRIETARYNAME() + ", ");
@@ -395,8 +396,6 @@ public class AssessmentActivity extends AppCompatActivity {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     finish();
-//                Intent goBackToMain = new Intent(context, MainActivity.class);
-//                startActivity(goBackToMain);
                 }
             }).show();
         }
@@ -419,6 +418,7 @@ public class AssessmentActivity extends AppCompatActivity {
             HttpHandler sh = new HttpHandler();
 
             // Making a request to url and getting response
+            String url = "https://hhs-opioid-codeathon.data.socrata.com/resource/9qqv-5nvv.json";
             String jsonStr = sh.makeServiceCall(url);
             Log.e(TAG, "Response from url: " + jsonStr);
 
@@ -477,7 +477,7 @@ public class AssessmentActivity extends AppCompatActivity {
                 return null;
             }
 
-        public String getJsonString(JSONObject jso, String field) {
+        String getJsonString(JSONObject jso, String field) {
             if(jso.isNull(field))
                 return null;
             else
@@ -496,6 +496,5 @@ public class AssessmentActivity extends AppCompatActivity {
             if (pDialog.isShowing())
                 pDialog.dismiss();
         }
-
     }
 }

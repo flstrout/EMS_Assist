@@ -6,8 +6,7 @@
     android:layout_height="match_parent"
     tools:context="com.fstrout.emsassist.MainActivity"
     android:orientation="vertical"
-    android:background="#effff6"
-    android:gravity="center_horizontal">
+    android:background="@color/colorLight">
 
     <TextView
         android:layout_width="match_parent"
@@ -20,37 +19,48 @@
         android:text="Assess the scene."
         android:textColor="@color/colorPrimaryDark"/>
 
-    <ImageButton
-        android:id="@+id/no_ems_button"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginBottom="12dp"
-        android:background="#fff"
-        android:textColor="#fff"
-        android:src="@drawable/green_star"
-        android:scaleType="fitCenter"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:weightSum="100"
+        android:gravity="center_horizontal">
 
-    <ImageButton
-        android:id="@+id/ems_button"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginBottom="12dp"
-        android:background="#fff"
-        android:textColor="#fff"
-        android:src="@drawable/panic_button"
-        android:scaleType="fitCenter"/>
+        <ImageButton
+            android:id="@+id/no_ems_button"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp"
+            android:background="@color/colorLight"
+            android:src="@drawable/button_green_star"
+            android:scaleType="fitCenter"
+            android:layout_weight="30"/>
 
-    <ImageButton
-        android:id="@+id/call_button"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginBottom="12dp"
-        android:background="#fff"
-        android:textColor="#fff"
-        android:src="@drawable/red_call"
-        android:scaleType="fitCenter"/>
+        <ImageButton
+            android:id="@+id/ems_button"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp"
+            android:background="@color/colorLight"
+            android:src="@drawable/button_panic"
+            android:scaleType="fitCenter"
+            android:layout_weight="30"/>
+
+        <ImageButton
+            android:id="@+id/call_button"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp"
+            android:background="@color/colorLight"
+            android:src="@drawable/button_call"
+            android:scaleType="fitCenter"
+            android:layout_weight="30" />
+    </LinearLayout>
+
+
+
 
 </LinearLayout>

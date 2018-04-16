@@ -10,4 +10,6 @@
         android:title="Interview"/>
     <item android:id="@+id/head_to_toe"
         android:title="Head-To-Toe"/>
+    <item android:id="@+id/exit"
+        android:title="Exit"/>
 </menu>
