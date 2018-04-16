@@ -392,7 +392,7 @@ public class AssessmentActivity extends AppCompatActivity {
                 smsManager.sendTextMessage("+1" + emergencyContact, null, message + link, null, null);
             }
 
-            new AlertDialog.Builder(AssessmentActivity.this).setTitle("EMS Message").setMessage("EMS broadcasted, help is on the way").setPositiveButton("Go Back", new DialogInterface.OnClickListener() {
+            new AlertDialog.Builder(AssessmentActivity.this).setTitle("Emergency Broadcast Sent").setMessage("EMS has been notified!\nHelp is on the way.").setPositiveButton("Go Back", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     finish();

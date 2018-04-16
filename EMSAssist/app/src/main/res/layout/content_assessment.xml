@@ -19,7 +19,7 @@
             android:id="@+id/od_warning"
             android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:background="@color/colorPrimaryDark"
+            android:background="#333333"
             android:visibility="gone"
             android:layout_margin="2dp"
             android:gravity="center_horizontal"
